@@ -1,3 +1,25 @@
+
+ * [x] Required: 
+ * [x] Required: 
+ * [x] Required: 
+ * [x] Required: 
+ * [x] Required: 
+ * [x] Required: 
+
+ * [ ] Advanced: 
+ * [ ] Advanced: 
+ * [ ] Advanced: 
+ * [ ] Advanced: 
+
+
+
+![Video Walkthrough](https://cloud.githubusercontent.com/assets/10593394/6566652/c5122a00-c679-11e4-8870-20a3f8e04a6c.gif)
+
+
+
+
+============================================================================
+
 # RestClientTemplate
 
 ## Overview
