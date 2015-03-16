@@ -1,5 +1,9 @@
 package com.codepath.apps.mysimpletweets.models;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,13 +38,33 @@ import org.json.JSONObject;
  ]
  },
  */
-public class User {
+@Table(name = "users")
+public class User extends Model {
     //list attributes
+    @Column(name = "username")
+    private String username;
+    @Column (name = "profile_image_url")
+    private String profile_image_url;
+
     private String name;
     private long uid;
     private String screenName;
     private String profileImageUrl;
+    private String tagline;
+    private int followersCount;
+    private int followeringCount;
 
+    public String getTagline() {
+        return tagline;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
+    public int getFriendsCount() {
+        return followeringCount;
+    }
 
     public String getName() {
         return name;
@@ -67,6 +91,10 @@ public class User {
             u.uid = json.getLong("id");
             u.screenName = json.getString("screen_name");
             u.profileImageUrl = json.getString("profile_image_url");
+            u.tagline = json.getString("description");
+            u.followersCount = json.getInt("followers_count");
+            u.followeringCount = json.getInt("friends_count");
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

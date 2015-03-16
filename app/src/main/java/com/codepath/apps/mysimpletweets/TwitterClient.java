@@ -1,9 +1,12 @@
 package com.codepath.apps.mysimpletweets;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.scribe.builder.api.Api;
@@ -28,6 +31,8 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CONSUMER_SECRET = "zC3DvMgdH5D0rPe45EgIh00sjrNKquIHFMwBYmZUTK8UGX2lfQ"; // Change this
 	public static final String REST_CALLBACK_URL = "oauth://desysimpletweets"; // Change this (here and in manifest)
 
+    public static final int TWEETS_PER_PAGE = 25;
+
 	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
 	}
@@ -47,12 +52,17 @@ public class TwitterClient extends OAuthBaseClient {
     //    GET statuses/home_timeline.json
     //    count=25
     //    since_id=1
-    public void getHomeTimeline(AsyncHttpResponseHandler handler) {
+    public void getHomeTimeline(int page, AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("statuses/home_timeline.json");
         //Specify the params
         RequestParams params = new RequestParams();
-        params.put("count", 25);
-        params.put("since_id",1);
+        params.put("count", TWEETS_PER_PAGE);
+        int since_id = ((page - 1)*TWEETS_PER_PAGE)+1;
+        //params.put("since_id", ((page - 1)*TWEETS_PER_PAGE)+1);
+        long prev_max_id = Tweet.max_id -1;
+//        params.put("count", 25);
+//        params.put("since_id",1);
+        params.put("max_id", prev_max_id);
         //Execute the request
         getClient().get(apiUrl, params, handler);
     }
@@ -89,6 +99,46 @@ public class TwitterClient extends OAuthBaseClient {
         RequestParams params = new RequestParams();
         params.put("status", tweetTalk);
         getClient().post(apiUrl, params, handler);
+    }
+
+
+    // Rate limits
+    // https://dev.twitter.com/rest/public/rate-limiting
+    public void getRateLimits( AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("application/rate_limit_status.json");
+        RequestParams params = new RequestParams();
+        params.put("resources", "statuses"); //help,users,search,statuses
+        Log.e("Twitter Client", "Sending out network request:" + apiUrl);
+        getClient().get(apiUrl, params, handler);
+    }
+
+    public void getMentionTimeline(int page, JsonHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        //Specify the params
+        RequestParams params = new RequestParams();
+        params.put("count", TWEETS_PER_PAGE);
+        int since_id = ((page - 1)*TWEETS_PER_PAGE)+1;
+        //params.put("since_id", ((page - 1)*TWEETS_PER_PAGE)+1);
+        long prev_max_id = Tweet.max_id -1;
+//        params.put("count", 25);
+//        params.put("since_id",1);
+        params.put("max_id", prev_max_id);
+        //Execute the request
+        getClient().get(apiUrl, params, handler);
+    }
+
+
+    public void getUserTimeline(String screenName, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", 25);
+        params.put("screen_name", screenName);
+        getClient().get(apiUrl, params, handler);
+    }
+
+    public void getUserInfo(AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("account/verify_credentials.json");
+        getClient().get(apiUrl, null, handler);
     }
 
 }

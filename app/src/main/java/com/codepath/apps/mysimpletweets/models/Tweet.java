@@ -1,10 +1,16 @@
 package com.codepath.apps.mysimpletweets.models;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by desy on 3/4/15.
@@ -102,14 +108,37 @@ import java.util.ArrayList;
  */
 
 // Parse the JSON + Store the data, encapsulate state logic or display logic
-public class Tweet {
+
+@Table(name = "tweets")
+public class Tweet extends Model {
+    @Column(name = "tweet_id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    long tweet_id;
+
+    @Column (name = "body")
+    String body;
+
+    @Column (name = "user", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
+    User user;
+
+    @Column (name = "created_at")
+    String created_at;
+
+    @Column (name = "media_type")
+    String media_type;
+
+    @Column (name = "media_url")
+    String media_url;
+
+
     //list out the attributes
-    private String body;
+    //private String body;
     private long uid;
-    private User user;  //sotre embedded user object
+    //private User user;  //sotre embedded user object
     private String createdAt;
     private int favourites_count;
     private String name;
+
+    public static long max_id=Long.MAX_VALUE;
 
 
     public User getUser() {
@@ -168,6 +197,14 @@ public class Tweet {
         }
 
         return tweets;
+    }
+
+    // get from local cache
+    public static List<Tweet> getAll() {
+        return new Select()
+                .from(Tweet.class)
+                .orderBy("tweet_id DESC")
+                .execute();
     }
 
 }

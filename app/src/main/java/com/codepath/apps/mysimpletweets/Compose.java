@@ -2,6 +2,8 @@ package com.codepath.apps.mysimpletweets;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ public class Compose extends ActionBarActivity {
     private TextView tvUser;
     private TextView tvId;
     private EditText etInput;
+    private TextView countWord;
 
     public Compose() {
     }
@@ -39,6 +42,7 @@ public class Compose extends ActionBarActivity {
         tvUser = (TextView) findViewById(R.id.tvUserName);
         tvId = (TextView) findViewById(R.id.tvID);
         etInput = (EditText) findViewById(R.id.etInput);
+        countWord = (TextView) findViewById(R.id.tvCountWord);
 
         String name = getIntent().getStringExtra("name");
         String screenName = getIntent().getStringExtra("screenName");
@@ -48,6 +52,33 @@ public class Compose extends ActionBarActivity {
         tvId.setText(screenName);
         iv.setImageResource(0);
         Picasso.with(getApplicationContext()).load(profilePicture).into(iv);
+
+
+        etInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int remainingMsgLength = 140 - s.toString().length();
+                countWord.setText(Integer.toString(remainingMsgLength));
+
+                if ((remainingMsgLength == 140) || (remainingMsgLength < 0)) {
+//                    btnTweet.setEnabled(false);
+//                    btnTweet.getBackground().setAlpha(50);
+                } else {
+//                    btnTweet.setEnabled(true);
+//                    btnTweet.getBackground().setAlpha(255);
+                }
+            }
+        });
     }
 
 
